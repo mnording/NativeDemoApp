@@ -18,8 +18,7 @@ import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
     KlarnaCheckout mKlarnaCheckout;
-    SignalListener klarnaListener;
-    public final static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
+    public final static String EXTRA_MESSAGE = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         WebView.setWebContentsDebuggingEnabled(true);
@@ -29,10 +28,9 @@ public class MainActivity extends AppCompatActivity {
         initKlarnaCheckout();
     }
     protected void initKlarnaCheckout() {
-        klarnaListener = new SignalListener() {
+        SignalListener klarnaListener = new SignalListener() {
             @Override
             public void onSignal(String eventName, JSONObject jsonObject) {
-                Log.d("MainActivity",eventName);
                 if (eventName.equals("complete")) {
                     try {
                         String url = jsonObject.getString("uri");
@@ -44,32 +42,31 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        getCheckoutFromUrl();
+        getCheckoutFromUrl("http://www.LocationOfYourSnippet.com",klarnaListener);
     }
     public void loadThankYou(String url) {
         Intent intent = new Intent(getApplicationContext(), KCOThankYouActivity.class);
         intent.putExtra(EXTRA_MESSAGE, url);
         MainActivity.this.startActivity(intent);
-        return;
     }
 
-    protected void getCheckoutFromUrl()
+    protected void getCheckoutFromUrl(String url,final SignalListener listener)
     {
+
         Ion.with(getApplicationContext())
-                .load("http://www.LocationOfYourSnippet.com")
+                .load(url)
                 .asString()
                 .setCallback(new FutureCallback<String>() {
                     @Override
                     public void onCompleted(Exception e, String result) {
-                        createKCOfromSnippet(result);
+                        createKCOfromSnippet(result,listener);
                     }
                 });
-
     }
-    protected void createKCOfromSnippet(String snippet)
+    protected void createKCOfromSnippet(String snippet,SignalListener listener)
     {
         mKlarnaCheckout.setSnippet(snippet);
-        mKlarnaCheckout.setSignalListener(klarnaListener);
+        mKlarnaCheckout.setSignalListener(listener);
         View view = mKlarnaCheckout.getView();
         ViewGroup placeholder = ((ViewGroup) findViewById(R.id.kcoView));
         placeholder.addView(view);
