@@ -56,8 +56,7 @@ public class MainActivity extends AppCompatActivity {
     protected void getCheckoutFromUrl()
     {
         Ion.with(getApplicationContext())
-                .load("http://aftersales-test-web1.internal.machines/mnording/inappBackend/index.php/snippet")
-                //.load("http://mnording.com/klarnaKCO/")
+                .load("http://www.LocationOfYourSnippet.com")
                 .asString()
                 .setCallback(new FutureCallback<String>() {
                     @Override
